@@ -1,10 +1,10 @@
 {
-	"boxtrot.midnightconfig.title": "The Box Trot",
-	"boxtrot.midnightconfig.doesBarrelFoolEndermen": "Does the barrel disguise let you look at Endermen?",
-	"boxtrot.midnightconfig.doesBarrelHideParticles": "Does the barrel disguise hide particles while Sneaking?",
-	"boxtrot.midnightconfig.doesBarrelFoolMobs": "Does the barrel disguise hide you from mobs while Sneaking?",
-	"boxtrot.midnightconfig.doesBarrelFoolAttackers": "Does the barrel disguise make attackers forget you while Sneaking?",
-	"boxtrot.midnightconfig.canOpenPlayerBarrels": "Can the player's inventory be opened while disguised as a barrel?",
-  "boxtrot.midnightconfig.barrelRotates": "Does the barrel rotate with the player's yaw and pitch?",
+	"config.boxtrot.title": "The Box Trot",
+	"config.boxtrot.does_barrel_fool_endermen": "Does the barrel disguise let you look at Endermen?",
+	"config.boxtrot.does_barrel_hide_particles": "Does the barrel disguise hide particles while Sneaking?",
+	"config.boxtrot.does_barrel_fool_mobs": "Does the barrel disguise hide you from mobs while Sneaking?",
+	"config.boxtrot.does_barrel_fool_attackers": "Does the barrel disguise make attackers forget you while Sneaking?",
+	"config.boxtrot.can_open_player_barrels": "Can the player's inventory be opened while disguised as a barrel?",
+  "config.boxtrot.barrel_rotates": "Does the barrel rotate with the player's yaw and pitch?",
   "boxtrot.configdesync": "Your config was different from the server's!"
 }

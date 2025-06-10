@@ -2,15 +2,15 @@ package dev.cammiescorner.boxtrot.mixin;
 
 import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import dev.cammiescorner.boxtrot.common.config.BoxTrotConfig;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.particle.ParticleEffect;
-import net.minecraft.world.World;
+import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -19,26 +19,26 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin extends Entity {
-	@Shadow public abstract ItemStack getEquippedStack(EquipmentSlot var1);
+	@Shadow public abstract ItemStack getItemBySlot(EquipmentSlot slot);
 
-	public LivingEntityMixin(EntityType<?> type, World world) { super(type, world); }
+	public LivingEntityMixin(EntityType<?> type, Level level) { super(type, level); }
 
-	@WrapWithCondition(method = "tickStatusEffects", at = @At(value = "INVOKE",
-			target = "Lnet/minecraft/world/World;addParticle(Lnet/minecraft/particle/ParticleEffect;DDDDDD)V"
+	@WrapWithCondition(method = "tickEffects", at = @At(value = "INVOKE",
+			target = "Lnet/minecraft/world/level/Level;addParticle(Lnet/minecraft/core/particles/ParticleOptions;DDDDDD)V"
 	))
-	private boolean boxtrot$noParticles(World world, ParticleEffect parameters, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
-		return !(BoxTrotConfig.doesBarrelHideParticles && isSneaking() && getEquippedStack(EquipmentSlot.HEAD).isOf(Items.BARREL));
+	private boolean noParticles(Level instance, ParticleOptions particleData, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed) {
+		return !(BoxTrotConfig.doesBarrelHideParticles && isCrouching() && getItemBySlot(EquipmentSlot.HEAD).is(Items.BARREL));
 	}
 
-	@Inject(method = "canTarget(Lnet/minecraft/entity/LivingEntity;)Z", at = @At("HEAD"), cancellable = true)
-	private void boxtrot$noTarget(LivingEntity target, CallbackInfoReturnable<Boolean> info) {
-		if(BoxTrotConfig.doesBarrelFoolAttackers && target instanceof PlayerEntity player && player.isSneaking() && player.getEquippedStack(EquipmentSlot.HEAD).isOf(Items.BARREL))
+	@Inject(method = "canAttack(Lnet/minecraft/world/entity/LivingEntity;)Z", at = @At("HEAD"), cancellable = true)
+	private void noTarget(LivingEntity target, CallbackInfoReturnable<Boolean> info) {
+		if(BoxTrotConfig.doesBarrelFoolAttackers && target instanceof Player player && player.isCrouching() && player.getItemBySlot(EquipmentSlot.HEAD).is(Items.BARREL))
 			info.setReturnValue(false);
 	}
 
-	@Inject(method = "canSee", at = @At("HEAD"), cancellable = true)
-	private void boxtrot$noSee(Entity entity, CallbackInfoReturnable<Boolean> info) {
-		if(BoxTrotConfig.doesBarrelFoolMobs && entity instanceof PlayerEntity player && player.isSneaking() && player.getEquippedStack(EquipmentSlot.HEAD).isOf(Items.BARREL))
+	@Inject(method = "hasLineOfSight", at = @At("HEAD"), cancellable = true)
+	private void noSee(Entity entity, CallbackInfoReturnable<Boolean> info) {
+		if(BoxTrotConfig.doesBarrelFoolMobs && entity instanceof Player player && player.isCrouching() && player.getItemBySlot(EquipmentSlot.HEAD).is(Items.BARREL))
 			info.setReturnValue(false);
 	}
 }

@@ -5,17 +5,17 @@
   "compatibilityLevel": "JAVA_17",
   "mixins": [
     "BarrelBlockMixin",
-    "EndermanEntityMixin",
+    "EnderManMixin",
     "LivingEntityMixin",
-    "PlayerEntityMixin"
+    "PlayerMixin"
   ],
   "client": [
-    "client.ArmorFeatureRendererMixin",
+    "client.HumanoidArmorLayerMixin",
     "client.EntityRenderDispatcherMixin",
-    "client.HeadFeatureRendererMixin",
-    "client.InGameHudMixin",
-    "client.PlayerEntityRendererMixin",
-    "client.WorldRendererAccessor"
+    "client.CustomHeadLayerMixin",
+    "client.GuiMixin",
+    "client.PlayerRendererMixin",
+    "client.LevelRendererAccessor"
   ],
   "injectors": {
     "defaultRequire": 1

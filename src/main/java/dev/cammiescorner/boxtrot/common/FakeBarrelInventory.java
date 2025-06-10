@@ -1,48 +1,48 @@
 package dev.cammiescorner.boxtrot.common;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.SimpleInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.world.World;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 
-public class FakeBarrelInventory extends SimpleInventory {
-	private PlayerEntity target;
-	private final World world;
+public class FakeBarrelInventory extends SimpleContainer {
+	private Player target;
+	private final Level world;
 
-	public FakeBarrelInventory(PlayerEntity target) {
+	public FakeBarrelInventory(Player target) {
 		super(27);
 		this.target = target;
-		this.world = target.getWorld();
+		this.world = target.level();
 
 		for(int i = 0; i < 27; i++)
-			setStack(i, target.getInventory().getStack(i + 9));
+			setItem(i, target.getInventory().getItem(i + 9));
 	}
 
 	@Override
-	public void setStack(int slot, ItemStack stack) {
-		super.setStack(slot, stack);
-		target.getInventory().setStack(slot + 9, stack);
+	public void setItem(int slot, ItemStack stack) {
+		super.setItem(slot, stack);
+		target.getInventory().setItem(slot + 9, stack);
 	}
 
 	@Override
-	public void onOpen(PlayerEntity player) {
-		super.onOpen(player);
-		world.playSound(null, target.getX(), target.getY() + 0.5, target.getZ(), SoundEvents.BLOCK_BARREL_OPEN, SoundCategory.BLOCKS, 0.5F, world.random.nextFloat() * 0.1F + 0.9F);
+	public void startOpen(Player player) {
+		super.startOpen(player);
+		world.playSound(null, target.getX(), target.getY() + 0.5, target.getZ(), SoundEvents.BARREL_OPEN, SoundSource.BLOCKS, 0.5F, world.random.nextFloat() * 0.1F + 0.9F);
 	}
 
 	@Override
-	public void onClose(PlayerEntity player) {
-		super.onClose(player);
-		world.playSound(null, target.getX(), target.getY() + 0.5, target.getZ(), SoundEvents.BLOCK_BARREL_CLOSE, SoundCategory.BLOCKS, 0.5F, world.random.nextFloat() * 0.1F + 0.9F);
+	public void stopOpen(Player player) {
+		super.stopOpen(player);
+		world.playSound(null, target.getX(), target.getY() + 0.5, target.getZ(), SoundEvents.BARREL_OPEN, SoundSource.BLOCKS, 0.5F, world.random.nextFloat() * 0.1F + 0.9F);
 	}
 
-	public PlayerEntity getTarget() {
+	public Player getTarget() {
 		return target;
 	}
 
-	public void setTarget(PlayerEntity player) {
+	public void setTarget(Player player) {
 		target = player;
 	}
 }

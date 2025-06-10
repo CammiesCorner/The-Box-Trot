@@ -1,37 +1,39 @@
 package dev.cammiescorner.boxtrot.client.models;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import dev.cammiescorner.boxtrot.BoxTrot;
-import net.minecraft.client.model.*;
-import net.minecraft.client.render.entity.model.EntityModel;
-import net.minecraft.client.render.entity.model.EntityModelLayer;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.Entity;
+import net.minecraft.client.model.EntityModel;
+import net.minecraft.client.model.geom.ModelLayerLocation;
+import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.model.geom.PartPose;
+import net.minecraft.client.model.geom.builders.*;
+import net.minecraft.world.entity.Entity;
 
 public class SussyBarrelModel<T extends Entity> extends EntityModel<T> {
-	public static final EntityModelLayer MODEL_LAYER = new EntityModelLayer(BoxTrot.id("sussy_barrel"), "main");
+	public static final ModelLayerLocation MODEL_LAYER = new ModelLayerLocation(BoxTrot.id("sussy_barrel"), "main");
 	private final ModelPart barrel;
 
 	public SussyBarrelModel(ModelPart root) {
 		this.barrel = root.getChild("barrel");
 	}
 
-	public static TexturedModelData getTexturedModelData() {
-		ModelData data = new ModelData();
-		ModelPartData root = data.getRoot();
+	public static LayerDefinition getTexturedModelData() {
+		MeshDefinition data = new MeshDefinition ();
+		PartDefinition root = data.getRoot();
 
-		root.addChild("barrel", ModelPartBuilder.create().uv(0, 0).cuboid(-8F, -16F, -8F, 16F, 16F, 16F, new Dilation(0F)), ModelTransform.pivot(0F, 24F, 0F));
+		root.addOrReplaceChild("barrel", CubeListBuilder.create().texOffs(0, 0).addBox(-8F, -16F, -8F, 16F, 16F, 16F, new CubeDeformation(0F)), PartPose.offset(0F, 24F, 0F));
 
-		return TexturedModelData.of(data, 64, 64);
+		return LayerDefinition.create(data, 64, 64);
 	}
 
 	@Override
-	public void render(MatrixStack matrices, VertexConsumer buffer, int light, int overlay, float r, float g, float b, float a) {
-		barrel.render(matrices, buffer, light, overlay);
+	public void setupAnim(T entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+
 	}
 
 	@Override
-	public void setAngles(T entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
-
+	public void renderToBuffer(PoseStack poseStack, VertexConsumer buffer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
+		barrel.render(poseStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
 	}
 }

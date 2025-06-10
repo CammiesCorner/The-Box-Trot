@@ -1,22 +1,21 @@
 package dev.cammiescorner.boxtrot.mixin;
 
-import net.minecraft.block.BarrelBlock;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.item.Equippable;
-import net.minecraft.sound.SoundEvent;
-import net.minecraft.sound.SoundEvents;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.item.Equipable;
+import net.minecraft.world.level.block.BarrelBlock;
 import org.spongepowered.asm.mixin.Mixin;
 
 @Mixin(BarrelBlock.class)
-public class BarrelBlockMixin implements Equippable {
-
+public class BarrelBlockMixin implements Equipable {
 	@Override
-	public EquipmentSlot getPreferredSlot() {
+	public EquipmentSlot getEquipmentSlot() {
 		return EquipmentSlot.HEAD;
 	}
 
 	@Override
 	public SoundEvent getEquipSound() {
-		return SoundEvents.BLOCK_BARREL_OPEN;
+		return SoundEvents.BARREL_OPEN;
 	}
 }

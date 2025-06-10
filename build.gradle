@@ -1,38 +1,49 @@
 plugins {
+	id 'idea'
 	id 'maven-publish'
-	alias libs.plugins.quilt.loom
+	alias libs.plugins.fabric.loom
 }
 
-base {
-	archivesName = project.archives_base_name
-}
+def ENV = System.getenv()
+def NOW = new Date()
+def buildTime = ENV.BUILD_TIME ?: NOW.format('yy.MMdd.HHmm')
 
-version = "$project.version+${libs.versions.minecraft.get()}"
-group = project.maven_group
+def javaVersion = 17
 
-loom {
-	mods {
-		"boxtrot" {
-			// Tell Loom about each source set used by your mod here. This ensures that your mod's classes are properly transformed by Loader.
-			sourceSet("main")
-		}
-	}
-}
+// TODO increment when updating the compendium
+def book_version = 3
 
-project.configurations.configureEach {
-	exclude(group: "net.fabricmc", module: "fabric-loader")
-	exclude(group: "net.fabricmc.fabric-api")
-}
+group = maven_group_id
+
+boolean isPreviewBuild = !ENV.TAG || ENV.TAG.matches(".+-.+")
+def buildNumber = !ENV.TAG ? ("${ENV.BUILD_NUMBER ? "build.${ENV.BUILD_NUMBER}" : buildTime}-${libs.versions.minecraft.get()}") : ""
+version = (ENV.TAG ?: "development") + ((isPreviewBuild && !ENV.TAG) ? "+${buildNumber}" : "")
+
+println("Building ${project.name} ${version}")
 
 repositories {
+	maven {
+		name = 'ParchmentMC'
+		url = 'https://maven.parchmentmc.org'
+	}
+	maven {
+		url = "https://maven.shedaniel.me"
+	}
 	maven {
 		name = "TerraformersMC"
 		url = "https://maven.terraformersmc.com"
 	}
 	maven {
-		name = "Modrinth"
-		url = "https://api.modrinth.com/maven"
-		content {
+		url = "https://nexus.resourcefulbees.com/repository/maven-public/"
+	}
+	exclusiveContent {
+		forRepository {
+			maven {
+				name = "Modrinth"
+				url = "https://api.modrinth.com/maven"
+			}
+		}
+		filter {
 			includeGroup "maven.modrinth"
 		}
 	}
@@ -44,63 +55,162 @@ repositories {
 
 dependencies {
 	minecraft libs.minecraft
-	mappings variantOf(libs.quilt.mappings) { classifier 'intermediary-v2' }
-	modImplementation libs.quilt.loader
 
-	modImplementation libs.quilted.fabric.api
-	modImplementation libs.midnightlib
-	modImplementation libs.modmenu
-	modImplementation libs.pehkui
+	mappings loom.layered() {
+		officialMojangMappings()
+		parchment "org.parchmentmc.data:parchment-${libs.versions.parchment.minecraft.get()}:${libs.versions.parchment.mappings.get()}@zip"
+	}
+
+	compileOnly libs.jetbrains.annotations
+
+	modImplementation libs.fabric.loader
+	modImplementation libs.fabric.api
+
+	modImplementation libs.resourceful.config
+
+	// pehkui
+	modCompileOnly libs.pehkui
+	modLocalRuntime libs.bundles.pehkui.runtime
+
+	// modmenu
+	modCompileOnly libs.modmenu
+	modLocalRuntime libs.modmenu
+}
+
+loom {
+	mods {
+		"${mod_id}" {
+			// Tell Loom about each source set used by your mod here. This ensures that your mod's classes are properly transformed by Loader.
+			sourceSet("main")
+		}
+	}
+
+	runs {
+		client {
+			ideConfigGenerated(true)
+			runDir("run")
+
+			if (project.hasProperty('mc_uuid')) {
+				programArg("--uuid=${project.findProperty('mc_uuid')}")
+			}
+
+			if (project.hasProperty('mc_username')) {
+				programArg("--username=${project.findProperty('mc_username')}")
+			}
+
+			if (project.hasProperty('mc_java_agent_path')) {
+				vmArg("-javaagent:${project.findProperty('mc_java_agent_path')}")
+			}
+		}
+	}
+}
+
+fabricApi {
+	configureDataGeneration()
 }
 
 processResources {
-	inputs.property 'version', version
+	filteringCharset "UTF-8"
 
-	filesMatching('quilt.mod.json') {
-		expand 'version': version
+	def expandProps = [
+		"version"              : version,
+		"maven_group_id"       : maven_group_id,
+		"mod_id"               : mod_id,
+		"mod_display_name"     : mod_display_name,
+		"mod_description"      : mod_description,
+		"sources_url"          : sources_url,
+		"issues_url"           : issues_url,
+		"license_url"          : license_url,
+		"discord_url"          : discord_url,
+		"homepage_url"         : homepage_url,
+
+		"minecraft_version"    : libs.versions.minecraft.get(),
+		"fabric_loader_version": libs.versions.fabric.loader.get(),
+		"java_version"         : "${javaVersion}",
+	]
+
+	filesMatching(["fabric.mod.json", "*.mixins.json"]) {
+		expand expandProps
 	}
+	filesMatching("**/patchouli_books/compendium_arcanus/book.json") {
+		expand "book_version": book_version
+	}
+
+	inputs.property "book_version", book_version
+	inputs.properties(expandProps)
 }
 
 tasks.withType(JavaCompile).configureEach {
-	it.options.encoding = 'UTF-8'
-	// Minecraft 1.18 (1.18-pre2) upwards uses Java 17.
-	it.options.release = 17
+	it.options.encoding = "UTF-8"
+	it.options.release.set(javaVersion)
+}
+
+base {
+	archivesName = "${project.name}-Fabric"
 }
 
 java {
-	// Still required by IDEs such as Eclipse and Visual Studio Code
-	sourceCompatibility = JavaVersion.VERSION_17
-	targetCompatibility = JavaVersion.VERSION_17
-
-	// Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task if it is present.
-	// If you remove this line, sources will not be generated.
 	withSourcesJar()
-
-	// If this mod is going to be a library, then it should also generate Javadocs in order to aid with development.
-	// Uncomment this line to generate them.
-	// withJavadocJar()
-}
-
-// If you plan to use a different file for the license, don't forget to change the file name here!
-jar {
-	from('LICENSE') {
-		rename { "${it}_${base.archivesName.get()}" }
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(javaVersion)
+		// TODO uncomment when switching to JDK 21
+//		vendor = JvmVendorSpec.MICROSOFT
 	}
 }
 
-// Configure the maven publication
+jar {
+	from(layout.projectDirectory) {
+		include "LICENSE.md"
+		rename "LICENSE.md", "LICENSE_${mod_id}.md"
+	}
+
+	manifest {
+		attributes([
+			'Specification-Title'     : rootProject.name,
+			'Specification-Version'   : project.version,
+			'Implementation-Title'    : "${project.name}",
+			'Maven-Artifact'          : "${maven_group_id}:${project.name}:${project.version}",
+			'Implementation-Version'  : project.version,
+			'Implementation-Timestamp': NOW.format("yyyy-MM-dd'T'HH:mm:ssZ"),
+			'Timestamp'               : NOW.toInstant().toEpochMilli(),
+			'Built-On-Java'           : "${System.getProperty('java.vm.version')} (${System.getProperty('java.vm.vendor')})",
+			'Built-On-Minecraft'      : libs.versions.minecraft.get()
+		])
+	}
+}
+
+sourcesJar {
+	from(layout.projectDirectory) {
+		include "LICENSE.md"
+		rename "LICENSE.md", "LICENSE_${mod_id}.md"
+	}
+}
+
 publishing {
 	publications {
 		mavenJava(MavenPublication) {
+			artifactId = "Arcanus-Continuum-Fabric"
 			from components.java
 		}
 	}
 
-	// See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
 	repositories {
-		// Add repositories to publish to here.
-		// Notice: This block does NOT have the same function as the block in the top level.
-		// The repositories here will be used for publishing your artifact, not for
-		// retrieving dependencies.
+		if (ENV.MAVEN_UPLOAD_URL) {
+			maven {
+				url = ENV.MAVEN_UPLOAD_URL
+				credentials {
+					username = ENV.MAVEN_UPLOAD_USERNAME
+					password = ENV.MAVEN_UPLOAD_PASSWORD
+				}
+			}
+		}
+	}
+}
+
+// IDEA no longer automatically downloads sources/javadoc jars for dependencies, so we need to explicitly enable the behavior.
+idea {
+	module {
+		downloadSources = true
+		downloadJavadoc = true
 	}
 }

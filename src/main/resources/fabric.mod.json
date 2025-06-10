@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "id": "${mod_id}",
+  "version": "${version}",
+  "name": "${mod_display_name}",
+  "description": "${mod_description}",
+  "authors": [
+    "Cammie"
+  ],
+  "contributors": [
+    "SkyNotTheLimit (Contributor)"
+  ],
+  "contact": {
+    "homepage": "${homepage_url}",
+    "issues": "${issues_url}",
+    "sources": "${sources_url}",
+    "discord": "${discord_url}"
+  },
+  "license": "${license_url}",
+  "icon": "assets/${mod_id}/icon.png",
+  "environment": "*",
+  "custom": {
+    "mc-publish": {
+      "curseforge": "606399",
+      "modrinth": "EmMd2auW",
+      "dependencies": [
+        "fabric-api(required){curseforge:306612}{modrinth:P7dR8mSH}",
+        "resourcefulconfig(required){modrinth:M1953qlQ}{curseforge:714059}",
+        "pehkui(required){curseforge:319596}{modrinth:t5W7Jfwy}"
+      ],
+      "loaders": [
+        "fabric",
+        "quilt"
+      ],
+      "java": [
+        "${java_version}"
+      ]
+    },
+    "modmenu": {
+      "links": {
+        "modmenu.discord": "${discord_url}"
+      }
+    },
+    "loom:injected_interfaces": {
+      "net/minecraft/class_1657": [
+        "dev/cammiescorner/boxtrot/common/FakeBarrel"
+      ]
+    }
+  },
+  "entrypoints": {
+    "main": [
+      "dev.cammiescorner.boxtrot.BoxTrot"
+    ],
+    "client": [
+      "dev.cammiescorner.boxtrot.client.BoxTrotClient"
+    ],
+    "modmenu": [
+      "dev.cammiescorner.boxtrot.common.config.BoxTrotModMenu"
+    ]
+  },
+  "mixins": [
+    "${mod_id}.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=${fabric_loader_version}",
+    "minecraft": "=${minecraft_version}",
+    "java": ">=${java_version}",
+    "fabric-api": "*",
+    "resourcefulconfig": "*",
+    "pehkui": "*"
+  }
+}
