@@ -71,7 +71,7 @@ public abstract class CustomHeadLayerMixin<T extends LivingEntity, M extends Ent
 				barrelModel.renderToBuffer(poseStack, buffer.getBuffer(RenderType.entityCutout(SUSSY_BARREL)), packedLight, OverlayTexture.NO_OVERLAY, 0xffffffff);
 			}
 			else {
-				if (BoxTrotConfig.barrelRotates && livingEntity instanceof AbstractClientPlayer player) {
+				if(BoxTrotConfig.barrelRotates && livingEntity instanceof AbstractClientPlayer player) {
 					poseStack.mulPose(Axis.YN.rotationDegrees(((FakeBarrel) player).boxtrot$getBarrelYaw()));
 					poseStack.mulPose(Axis.XP.rotationDegrees(((FakeBarrel) player).boxtrot$getBarrelPitch()));
 				}

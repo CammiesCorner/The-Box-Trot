@@ -84,11 +84,11 @@ public abstract class PlayerMixin extends LivingEntity implements FakeBarrel {
 				else
 					boxtrot$setStoodStillFor(boxtrot$getStoodStillFor() + 1);
 
-				if (boxtrot$getStoodStillFor() == 0 || boxtrot$getStoodStillFor() == 1) {
+				if(boxtrot$getStoodStillFor() == 0 || boxtrot$getStoodStillFor() == 1) {
 					barrelYaw = Math.round(getYRot() / 90f) * 90; // 90 degree increments to line up with the block
 					barrelPitch = Math.round(getXRot() / 90f) * 90;
 				}
-				else if (boxtrot$getStoodStillFor() == 10) {
+				else if(boxtrot$getStoodStillFor() == 10) {
 					setPos(getBlockX() + 0.5, getY(), getBlockZ() + 0.5);
 				}
 
