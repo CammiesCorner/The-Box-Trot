@@ -1,5 +1,6 @@
 package dev.cammiescorner.boxtrot.mixin;
 
+import net.minecraft.core.Holder;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -15,7 +16,7 @@ public class BarrelBlockMixin implements Equipable {
 	}
 
 	@Override
-	public SoundEvent getEquipSound() {
-		return SoundEvents.BARREL_OPEN;
+	public Holder<SoundEvent> getEquipSound() {
+		return Holder.direct(SoundEvents.BARREL_OPEN);
 	}
 }

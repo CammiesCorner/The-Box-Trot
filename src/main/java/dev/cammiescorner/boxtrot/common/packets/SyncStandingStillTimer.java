@@ -1,30 +1,28 @@
 package dev.cammiescorner.boxtrot.common.packets;
 
+import commonnetwork.networking.data.PacketContext;
 import dev.cammiescorner.boxtrot.BoxTrot;
 import dev.cammiescorner.boxtrot.common.FakeBarrel;
-import io.netty.buffer.Unpooled;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.network.ServerGamePacketListenerImpl;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
-public class SyncStandingStillTimer {
-	public static final ResourceLocation ID = BoxTrot.id("sync_standing_still_timer_server");
+public record SyncStandingStillTimer(int timer) implements CustomPacketPayload {
+	public static final CustomPacketPayload.Type<SyncStandingStillTimer> TYPE = new CustomPacketPayload.Type<>(BoxTrot.id("standing_still_timer"));
+	public static final StreamCodec<? extends FriendlyByteBuf, SyncStandingStillTimer> CODEC = StreamCodec.of((buffer, packet) -> {
+		buffer.writeVarInt(packet.timer);
+	}, buffer -> {
+		int timer = buffer.readVarInt();
 
-	public static void send(int value) {
-		FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
+		return new SyncStandingStillTimer(timer);
+	});
 
-		buf.writeVarInt(value);
-
-		ClientPlayNetworking.send(ID, buf);
+	public static void handle(PacketContext<SyncStandingStillTimer> context) {
+		((FakeBarrel) context.sender()).boxtrot$setStoodStillFor(context.message().timer());
 	}
 
-	public static void handler(MinecraftServer server, ServerPlayer player, ServerGamePacketListenerImpl handler, FriendlyByteBuf buf, PacketSender sender) {
-		int value = buf.readVarInt();
-
-		server.execute(() -> ((FakeBarrel) player).boxtrot$setStoodStillFor(value));
+	@Override
+	public Type<? extends CustomPacketPayload> type() {
+		return TYPE;
 	}
 }

@@ -51,9 +51,9 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
 		}
 	}
 
-	@Inject(method = "renderNameTag(Lnet/minecraft/client/player/AbstractClientPlayer;Lnet/minecraft/network/chat/Component;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V", at = @At("HEAD"), cancellable = true)
-	public void hideName(AbstractClientPlayer player, Component displayName, PoseStack poseStack, MultiBufferSource buffer, int packedLight, CallbackInfo ci) {
-		if(player.getItemBySlot(EquipmentSlot.HEAD).is(Items.BARREL) && player.isCrouching())
+	@Inject(method = "renderNameTag(Lnet/minecraft/client/player/AbstractClientPlayer;Lnet/minecraft/network/chat/Component;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;IF)V", at = @At("HEAD"), cancellable = true)
+	public void hideName(AbstractClientPlayer entity, Component displayName, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, float partialTick, CallbackInfo ci) {
+		if(entity.getItemBySlot(EquipmentSlot.HEAD).is(Items.BARREL) && entity.isCrouching())
 			ci.cancel();
 	}
 }

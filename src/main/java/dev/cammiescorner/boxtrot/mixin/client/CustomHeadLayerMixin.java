@@ -68,7 +68,7 @@ public abstract class CustomHeadLayerMixin<T extends LivingEntity, M extends Ent
 
 			if(!livingEntity.isCrouching()) {
 				poseStack.translate(0, -1.375, 0);
-				barrelModel.renderToBuffer(poseStack, buffer.getBuffer(RenderType.entityCutout(SUSSY_BARREL)), packedLight, OverlayTexture.NO_OVERLAY, 1F, 1F, 1F, 1F);
+				barrelModel.renderToBuffer(poseStack, buffer.getBuffer(RenderType.entityCutout(SUSSY_BARREL)), packedLight, OverlayTexture.NO_OVERLAY, 0xffffffff);
 			}
 			else {
 				if (BoxTrotConfig.barrelRotates && livingEntity instanceof AbstractClientPlayer player) {

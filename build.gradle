@@ -8,10 +8,7 @@ def ENV = System.getenv()
 def NOW = new Date()
 def buildTime = ENV.BUILD_TIME ?: NOW.format('yy.MMdd.HHmm')
 
-def javaVersion = 17
-
-// TODO increment when updating the compendium
-def book_version = 3
+def javaVersion = 21
 
 group = maven_group_id
 
@@ -51,6 +48,9 @@ repositories {
 		name = "JitPack"
 		url = "https://jitpack.io"
 	}
+	maven {
+		url = "https://jm.gserv.me/repository/maven-public/"
+	}
 }
 
 dependencies {
@@ -68,9 +68,15 @@ dependencies {
 
 	modImplementation libs.resourceful.config
 
+	modImplementation libs.common.network.fabric
+
 	// pehkui
-	modCompileOnly libs.pehkui
-	modLocalRuntime libs.bundles.pehkui.runtime
+	modCompileOnly(libs.pehkui) {
+		exclude group: "net.fabricmc.fabric-api"
+	}
+	modLocalRuntime(libs.pehkui) {
+		exclude group: "net.fabricmc.fabric-api"
+	}
 
 	// modmenu
 	modCompileOnly libs.modmenu
@@ -132,11 +138,7 @@ processResources {
 	filesMatching(["fabric.mod.json", "*.mixins.json"]) {
 		expand expandProps
 	}
-	filesMatching("**/patchouli_books/compendium_arcanus/book.json") {
-		expand "book_version": book_version
-	}
 
-	inputs.property "book_version", book_version
 	inputs.properties(expandProps)
 }
 

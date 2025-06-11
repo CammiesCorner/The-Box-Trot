@@ -2,6 +2,7 @@ package dev.cammiescorner.boxtrot.mixin.client;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import dev.cammiescorner.boxtrot.BoxTrot;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
@@ -36,11 +37,11 @@ public abstract class GuiMixin {
 		return original;
 	}
 
-	@Inject(method = "render", at = @At(value = "INVOKE",
+	@Inject(method = "renderCameraOverlays", at = @At(value = "INVOKE",
 			target = "Lnet/minecraft/world/item/ItemStack;is(Lnet/minecraft/world/item/Item;)Z"
 	))
-	public void renderOverlay(GuiGraphics context, float tickDelta, CallbackInfo ci) {
+	public void renderOverlay(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
 		if(minecraft.player != null && minecraft.player.getItemBySlot(EquipmentSlot.HEAD).is(Items.BARREL))
-			renderTextureOverlay(context, BARREL_OVERLAY, 1F);
+			renderTextureOverlay(guiGraphics, BARREL_OVERLAY, 1f);
 	}
 }

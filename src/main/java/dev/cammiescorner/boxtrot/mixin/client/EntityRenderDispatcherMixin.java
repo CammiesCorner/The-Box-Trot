@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(EntityRenderDispatcher.class)
 public class EntityRenderDispatcherMixin {
 	@Inject(method = "renderHitbox", at = @At("HEAD"), cancellable = true)
-	private static void hideF3Hitbox(PoseStack poseStack, VertexConsumer buffer, Entity entity, float partialTicks, CallbackInfo ci) {
+	private static void hideF3Hitbox(PoseStack poseStack, VertexConsumer buffer, Entity entity, float red, float green, float blue, float alpha, CallbackInfo ci) {
 		if(entity instanceof Player player && player != Minecraft.getInstance().player && player.getItemBySlot(EquipmentSlot.HEAD).is(Items.BARREL) && player.isCrouching())
 			ci.cancel();
 	}

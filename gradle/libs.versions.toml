@@ -1,19 +1,19 @@
 [versions]
 fabric_loom = "1.10.1"
 
-minecraft = "1.20.1"
-fabric_loader = "0.16.10"
+minecraft = "1.21.1"
+fabric_loader = "0.16.13"
 
 # https://parchmentmc.org/docs/getting-started
-parchment_minecraft = "1.20.1"
-parchment_mappings = "2023.09.03"
+parchment_minecraft = "1.21.1"
+parchment_mappings = "2024.11.17"
 
 jetbrains_annotations = "26.0.1"
-fabric_api = "0.92.3+1.20.1"
-modmenu = "7.2.2"
-resourceful_config = "2.1.2"
-pehkui = "3.7.8+1.14.4-1.20.1"
-kanos = "0.4.1"
+fabric_api = "0.115.4+1.21.1"
+modmenu = "11.0.3"
+resourceful_config = "3.0.10"
+pehkui = "3.8.3"
+common_network = "1.0.17-beta.2-1.21.1"
 
 [libraries]
 minecraft = { module = "com.mojang:minecraft", version.ref = "minecraft" }
@@ -22,13 +22,12 @@ jetbrains_annotations = { module = "org.jetbrains:annotations", version.ref = "j
 
 fabric_api = { module = "net.fabricmc.fabric-api:fabric-api", version.ref = "fabric_api" }
 modmenu = { module = "com.terraformersmc:modmenu", version.ref = "modmenu" }
-resourceful_config = { module = "com.teamresourceful.resourcefulconfig:resourcefulconfig-fabric-1.20.1", version.ref = "resourceful_config" }
-pehkui = { module = "maven.modrinth:pehkui", version.ref = "pehkui" }
-kanos = { module = "com.github.Virtuoel:KanosConfig", version.ref = "kanos" }
+resourceful_config = { module = "com.teamresourceful.resourcefulconfig:resourcefulconfig-fabric-1.21", version.ref = "resourceful_config" }
+common_network_fabric = { module = "mysticdrew:common-networking-fabric", version.ref = "common_network" }
+pehkui = { module = "com.github.Virtuoel:Pehkui", version.ref = "pehkui" }
 
 # If you have multiple similar dependencies, you can declare a dependency bundle and reference it on the build script with "libs.bundles.example".
 [bundles]
-pehkui_runtime = ["pehkui", "kanos"]
 
 [plugins]
 fabric_loom = { id = "fabric-loom", version.ref = "fabric_loom" }

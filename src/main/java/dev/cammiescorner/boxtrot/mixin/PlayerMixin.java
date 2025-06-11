@@ -1,5 +1,6 @@
 package dev.cammiescorner.boxtrot.mixin;
 
+import commonnetwork.api.Network;
 import dev.cammiescorner.boxtrot.common.FakeBarrel;
 import dev.cammiescorner.boxtrot.common.FakeBarrelInventory;
 import dev.cammiescorner.boxtrot.common.config.BoxTrotConfig;
@@ -91,7 +92,7 @@ public abstract class PlayerMixin extends LivingEntity implements FakeBarrel {
 					setPos(getBlockX() + 0.5, getY(), getBlockZ() + 0.5);
 				}
 
-				SyncStandingStillTimer.send(stoodStillFor);
+				Network.getNetworkHandler().sendToServer(new SyncStandingStillTimer(stoodStillFor));
 			}
 		}
 		else {

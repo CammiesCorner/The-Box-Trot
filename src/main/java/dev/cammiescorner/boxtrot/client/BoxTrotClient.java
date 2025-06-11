@@ -1,10 +1,8 @@
 package dev.cammiescorner.boxtrot.client;
 
 import dev.cammiescorner.boxtrot.client.models.SussyBarrelModel;
-import dev.cammiescorner.boxtrot.common.packets.SyncBoxTrotConfig;
 import dev.cammiescorner.boxtrot.mixin.client.LevelRendererAccessor;
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityModelLayerRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.minecraft.client.Minecraft;
@@ -20,8 +18,6 @@ public class BoxTrotClient implements ClientModInitializer {
 	@Override
 	public void onInitializeClient() {
 		EntityModelLayerRegistry.registerModelLayer(SussyBarrelModel.MODEL_LAYER, SussyBarrelModel::getTexturedModelData);
-
-		ClientPlayNetworking.registerGlobalReceiver(SyncBoxTrotConfig.ID, SyncBoxTrotConfig::handler);
 
 		WorldRenderEvents.AFTER_ENTITIES.register(context -> {
 			Minecraft client = Minecraft.getInstance();
